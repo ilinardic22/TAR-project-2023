@@ -18,10 +18,31 @@ class RNNModel(nn.Module):
         # self.cell_type = cell_type
 
     def forward(self, x):
+        # print("shape 1:", x.shape)
         outputs, _ = self.rnn(x)
+        # print("shape 2:", outputs.shape)
         x = self.fc1(outputs)
+        # print("shape 3:", x.shape)
         x = self.relu(x)
         x = self.fc2(x)
+        # print("shape 4:", x.shape)
+        return x
+    
+
+class FCModel(nn.Module):
+    def __init__(self, embedding_dim, hidden_dim):
+        super(FCModel, self).__init__()
+        self.fc1 = nn.Linear(embedding_dim, hidden_dim)
+        self.relu = nn.ReLU()
+        self.fc2 = nn.Linear(hidden_dim, hidden_dim)
+        self.fc3 = nn.Linear(hidden_dim, 1)
+        
+    def forward(self, x):
+        x = self.fc1(x)
+        x = self.relu(x)
+        x = self.fc2(x)
+        x = self.relu(x)
+        x = self.fc3(x)
         return x
 
     
@@ -40,7 +61,7 @@ class MyDataset(Dataset):
     
 
 class BaselineRunner:
-    def __init__(self, args, cell_type, hidden_size, num_layers, dropout, bidirectional, train_df, test_df, trait):
+    def __init__(self, args, cell_type, hidden_size, num_layers, dropout, bidirectional, train_df, test_df, trait, is_baseline):
         self.args = args
         self.cell_type = cell_type
         self.hidden_size = hidden_size
@@ -50,6 +71,7 @@ class BaselineRunner:
         self.train_df = train_df
         self.test_df = test_df
         self.trait = trait
+        self.is_baseline = is_baseline
 
     def train(self, model, data_loader, optimizer, criterion):
         model.train()
@@ -100,7 +122,10 @@ class BaselineRunner:
         train_loader = DataLoader(train_dataset, batch_size=10, shuffle=True)
         test_loader = DataLoader(test_dataset, batch_size=10, shuffle=False)
 
-        model = RNNModel(300, self.hidden_size, self.num_layers, self.dropout, self.bidirectional)
+        if self.is_baseline:
+            model = FCModel(300, 150)
+        else:
+            model = RNNModel(300, self.hidden_size, self.num_layers, self.dropout, self.bidirectional)
         criterion = nn.BCEWithLogitsLoss()
         optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)
 
