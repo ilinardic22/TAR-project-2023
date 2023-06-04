@@ -29,7 +29,7 @@ const Form = () => {
           labels: labels,
           datasets: [
             {
-              label: 'Values',
+              label: 'Value',
               data: values,
               backgroundColor: backgroundColors, // 'rgba(75, 192, 192, 0.2)',
               borderColor: 'rgba(75, 192, 192, 1)',
