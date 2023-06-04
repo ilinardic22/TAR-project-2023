@@ -8,7 +8,7 @@ import reportWebVitals from './reportWebVitals';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <h1>React App</h1>
+    <h1>Personality Trait Classification</h1>
     <Form />
   </React.StrictMode>
 );
